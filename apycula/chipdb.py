@@ -4184,13 +4184,17 @@ def json_pinout(device):
             "GW5AST-138C": pins,
         }, res_bank_pins)
     elif device == "GW1N-2":
-        # GW1N-2 uses the GW1N-1P5C vendor data (same die). Key the pinout under the
-        # vendor name (downstream dat_fill_io_cfgs/pindef expect params['device']),
-        # and also under GW1N-2 for nextpnr compatibility.
-        pkgs, pins, bank_pins = get_pins("GW1N-1P5C")
-        return (pkgs, {
-            "GW1N-1P5C": pins,
-            "GW1N-2": pins,
+        # The UV2 is the GW1N-2 die, but UG171 defines a distinct QN48 package.
+        # Reuse only the vendor die metadata; never publish the 1P5C/QFN48XF
+        # part number as a GW1N-2 package.
+        qn48 = pindef.get_pin_locs("GW1N-1P5C", "QN48", pindef.VeryTrue)
+        bank_pins = pindef.get_bank_pins("GW1N-1P5C", "QN48")
+        packages = {
+            "GW1N-UV2QN48XF": ("QN48", "GW1N-2", ""),
+        }
+        return (packages, {
+            "GW1N-1P5C": {"QN48": qn48},
+            "GW1N-2": {"QN48": qn48},
         }, bank_pins)
     else:
         raise Exception("unsupported device")
@@ -6056,4 +6060,3 @@ def pll_pads(dev, device, pad_locs):
         return
     for loc, pll_data in _pll_pads[device].items():
         dev.pad_pll[loc] = pll_data
-
