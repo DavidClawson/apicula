@@ -289,6 +289,15 @@ def set_corners_io(db, device):
         db.corner_tiles_io[db.rows - 1, 0]           = 'L'
         db.corner_tiles_io[0, db.cols - 1]           = 'R'
         db.corner_tiles_io[db.rows - 1, db.cols - 1] = 'R'
+    elif device in {'GW1N-2'}:
+        # The top-right corner tile hosts IOR1: UG171's QN48 bonds IOR1A/IOR1B
+        # as pins 47/46, and the unpacked stock netlist drives its capture
+        # engine from the IOR1B pad, so bank lookups there must resolve the
+        # right edge, not a nonexistent IOT20.
+        db.corner_tiles_io[0, 0]                     = 'T'
+        db.corner_tiles_io[db.rows - 1, 0]           = 'B'
+        db.corner_tiles_io[0, db.cols - 1]           = 'R'
+        db.corner_tiles_io[db.rows - 1, db.cols - 1] = 'B'
     else:
         db.corner_tiles_io[0, 0]                     = 'T'
         db.corner_tiles_io[db.rows - 1, 0]           = 'B'
@@ -4189,8 +4198,13 @@ def json_pinout(device):
         # part number as a GW1N-2 package.
         qn48 = pindef.get_pin_locs("GW1N-1P5C", "QN48", pindef.VeryTrue)
         bank_pins = pindef.get_bank_pins("GW1N-1P5C", "QN48")
+        # Keyed by the full ordering code with speed grade, matching the other
+        # devices: nextpnr strips the third-field suffix for its package name
+        # and gowin_pack looks the full code up verbatim.  C6/I5 is the
+        # standard Gowin commercial/industrial grade; the grade printed on a
+        # given board's chip should be confirmed against its marking.
         packages = {
-            "GW1N-UV2QN48XF": ("QN48", "GW1N-2", ""),
+            "GW1N-UV2QN48XFC6/I5": ("QN48", "GW1N-2", "C6/I5"),
         }
         return (packages, {
             "GW1N-1P5C": {"QN48": qn48},
