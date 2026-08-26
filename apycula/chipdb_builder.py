@@ -21,9 +21,9 @@ DEVICE_PARAMS = {
         # edition ships no GW1N-2 vendor folder, but GW1N-1P5C is the *same die*
         # (shared .fse family per doc/device_grouping.md). Verified: synthesizing for
         # this partnumber emits device-ID 06 00 00 00 01 20 68 1b == 0x0120681B.
-        "package": "QFN48XF",
+        "package": "QN48",
         "device": "GW1N-1P5C",
-        "partnumber": "GW1N-UV1P5QN48XFC7/I6",
+        "partnumber": "GW1N-UV2QN48XF",
     },
     "GW1NS-4": {
         "package": "QFN48P",
